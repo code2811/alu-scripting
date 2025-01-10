@@ -1,10 +1,15 @@
 #!/usr/bin/env ruby
-# Match the sender, receiver, and flags using regular expressions
-log_line = ARGV[0]
-matches = log_line.match(/from:(\S+).+to:(\S+).+flags:(\S+)/)
 
-# If a match is found, output the sender, receiver, and flags
-if matches
-  puts "#{matches[1]},#{matches[2]},#{matches[3]}"
+log_entry = ARGV[0]
+
+# Regular expression to extract the required parts from the log entry
+regex = /\[from:([^\]]+)\].*\[to:([^\]]+)\].*\[flags:([^\]]+)\]/
+
+# Match the regex and extract the parts
+match = log_entry.match(regex)
+
+# Output the result if a match is found
+if match
+  puts "#{match[1]},#{match[2]},#{match[3]}"
 end
-
+````
