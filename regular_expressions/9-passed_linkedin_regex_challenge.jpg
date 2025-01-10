@@ -1,0 +1,14 @@
+#!/usr/bin/env ruby
+
+# Get input argument
+input = ARGV[0]
+
+# Define the combined regular expression
+pattern = /.(LN|K|D)([MBERS])\1(ENG|INE|E|R)[LINKED]*INR+D[^WORK]*ING?.[IN].*C{0}N[NECT]*r/
+
+# Check if the input matches the pattern
+if input.match(pattern)
+  puts "Pattern matched!"
+else
+  puts "No match!"
+end
