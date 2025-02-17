@@ -1,33 +1,21 @@
+#!/usr/bin/python3
 
-dule to query Reddit API and get subscriber count for a subreddit"""
 import requests
 
-
 def number_of_subscribers(subreddit):
-    """
-    Returns the number of subscribers for a given subreddit.
-    If an invalid subreddit is given, returns 0.
-    """
-    # Reddit API endpoint for subreddit information
-    url = f"https://www.reddit.com/r/{subreddit}/about.json"
+    # Define the base URL and headers for the request
+    url = f'https://www.reddit.com/r/{subreddit}/about.json'
+    headers = {'User-Agent': 'myAPI/0.1'}
 
-    # Custom User-Agent to avoid Too Many Requests errors
-    headers = {
-        'User-Agent': 'python:alx.api.advanced:v1.0.0 (by /u/alx_student)'
-    }
+    # Send a GET request to the subreddit about page
+    response = requests.get(url, headers=headers)
 
-    try:
-        # Make GET request to Reddit API, don't follow redirects
-        response = requests.get(url, headers=headers, allow_redirects=False)
+    # Check if the response is successful (status code 200)
+    if response.status_code == 200:
+        # Parse the JSON response and get the subscriber count
+        data = response.json()
+        return data['data']['subscribers']
+    else:
+        # If the subreddit is invalid or there's an error, return 0
+        return 0
 
-        # Check if request was successful and return subscriber count
-        if response.status_code == 200:
-            data = response.json()
-            return data['data']['subscribers']
-        else:
-            # Return 0 for invalid subreddits or other errors
-            return 0
-    except Exception:
-        # Return 0 if any error occurs during the request
-
-        return 0i
