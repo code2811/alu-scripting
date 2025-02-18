@@ -3,8 +3,8 @@
 Module to query Reddit API and recursively count keywords in hot article titles.
 """
 
-import requests
 import re
+import requests
 
 
 def count_words(subreddit, word_list, after=None, word_count=None):
@@ -39,5 +39,33 @@ def count_words(subreddit, word_list, after=None, word_count=None):
 
         # Parse the JSON response
         data = response.json()
-        p
+        posts = data['data']['children']
+
+        # Process the titles of each post
+        for post in posts:
+            title = post['data']['title'].lower()  # Convert title to lowercase
+
+            # Count occurrences of each word in the title
+            for word in word_list:
+                # Using a regex to match words while ignoring punctuation
+                word_pattern = r'\b' + re.escape(word.lower()) + r'\b'
+                word_count[word.lower()] += len(re.findall(word_pattern, title))
+
+        # If there are more posts, make a recursive call to fetch the next page of posts
+        after = data['data'].get('after', None)
+        if after:
+            count_words(subreddit, word_list, after, word_count)
+
+        # Once all posts have been processed, print the results
+        if after is None:
+            # Sort by count (descending) and alphabetically (ascending) in case of tie
+            sorted_words = sorted(word_count.items(), key=lambda x: (-x[1], x[0]))
+
+            for word, count in sorted_words:
+                if count > 0:  # Only print words that have non-zero count
+                    print(f"{word}: {count}")
+
+    except Exception:
+        # Handle any exceptions (e.g., network issues) and return nothing
+        return
 
