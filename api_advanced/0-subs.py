@@ -1,45 +1,40 @@
 #!/usr/bin/python3
-
+"""Module to query Reddit API and get number of subscribers for a subreddit"""
 import requests
 
-def recurse(subreddit, hot_list=[]):
+
+def number_of_subscribers(subreddit):
     """
-    A recursive function that queries the Reddit API and returns a list containing 
-    the titles of all hot articles for a given subreddit.
-
-    Parameters:
-    subreddit (str): The name of the subreddit to query.
-    hot_list (list): A list that will accumulate the titles of hot articles.
-
+    Returns the number of subscribers for a given subreddit.
+    If the subreddit is invalid, returns 0.
+    
+    Args:
+        subreddit: name of the subreddit
+    
     Returns:
-    list: A list containing titles of all hot articles for the subreddit, 
-          or None if the subreddit is invalid.
+        Number of subscribers if successful, 0 otherwise
     """
-    # Define the URL and headers for the request
-    url = f'https://www.reddit.com/r/{subreddit}/hot.json'
-    headers = {'User-Agent': 'myAPI/0.1'}
+    # Reddit API URL
+    url = f"https://www.reddit.com/r/{subreddit}/about.json"
     
-    # Send a GET request to the subreddit hot page
-    response = requests.get(url, headers=headers, params={'after': None})
-
-    # Check if the response status is valid (200 OK)
-    if response.status_code != 200:
-        # Return None if the subreddit is invalid or there is an error
-        return None
-
-    # Parse the JSON response
-    data = response.json()
-
-    # Get the list of hot posts and append their titles to hot_list
-    for post in data['data']['children']:
-        hot_list.append(post['data']['title'])
-
-    # Check if there is more data (pagination)
-    after = data['data'].get('after')
-    if after:
-        # If there is more data, recurse with the next page
-        return recurse(subreddit, hot_list)
+    # Custom User-Agent to avoid Too Many Requests error
+    headers = {
+        'User-Agent': 'linux:0-subs:v1.0.0 (by /u/your_username)'
+    }
     
-    # Base case: Return the final list when no more pages are available
-    return hot_list
-
+    try:
+        # Make GET request to Reddit API
+        response = requests.get(url, headers=headers, allow_redirects=False)
+        
+        # Check if request was successful
+        if response.status_code == 200:
+            # Parse JSON response and extract subscribers count
+            data = response.json()
+            return data['data']['subscribers']
+        else:
+            # Return 0 for invalid subreddit or other errors
+            return 0
+            
+    except Exception:
+        # Return 0 if any error occurs
+        return 0
