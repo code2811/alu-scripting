@@ -1,40 +1,41 @@
 #!/usr/bin/python3
-"""Module to query Reddit API and get number of subscribers for a subreddit"""
-import requests
+"""
+Module to query the Reddit API and return the number of subscribers of a given subreddit.
+"""
 
+import requests
 
 def number_of_subscribers(subreddit):
     """
-    Returns the number of subscribers for a given subreddit.
-    If the subreddit is invalid, returns 0.
-    
+    Queries the Reddit API to get the number of subscribers of a given subreddit.
+
     Args:
-        subreddit: name of the subreddit
-    
+        subreddit (str): The subreddit to query.
+
     Returns:
-        Number of subscribers if successful, 0 otherwise
+        int: The number of subscribers or 0 if the subreddit is invalid.
     """
-    # Reddit API URL
+    # Define the Reddit API URL for the subreddit
     url = f"https://www.reddit.com/r/{subreddit}/about.json"
     
-    # Custom User-Agent to avoid Too Many Requests error
-    headers = {
-        'User-Agent': 'linux:0-subs:v1.0.0 (by /u/your_username)'
-    }
+    # Set the custom User-Agent to avoid "Too Many Requests" errors
+    headers = {'User-Agent': 'python:subreddit.subscriber.count:v1.0 (by /u/yourusername)'}
     
     try:
-        # Make GET request to Reddit API
+        # Send a GET request to the Reddit API with custom headers and avoid following redirects
         response = requests.get(url, headers=headers, allow_redirects=False)
         
-        # Check if request was successful
-        if response.status_code == 200:
-            # Parse JSON response and extract subscribers count
-            data = response.json()
-            return data['data']['subscribers']
-        else:
-            # Return 0 for invalid subreddit or other errors
+        # If the subreddit is invalid (404 status code), return 0
+        if response.status_code == 404:
             return 0
-            
+        
+        # Parse the JSON response
+        data = response.json()
+        
+        # Return the number of subscribers from the 'data' field
+        return data['data']['subscribers']
+    
     except Exception:
-        # Return 0 if any error occurs
+        # Handle any exceptions (network issues, etc.) and return 0
         return 0
+
