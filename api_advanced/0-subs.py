@@ -1,6 +1,10 @@
 #!/usr/bin/python3
 """
 Module to query the Reddit API and return the number of subscribers of a given subreddit.
+
+This module uses the Reddit API to retrieve information about a subreddit, specifically
+the number of subscribers. If the subreddit is valid, the subscriber count is returned.
+If the subreddit does not exist or is invalid, the function returns 0.
 """
 
 import requests
@@ -38,4 +42,5 @@ def number_of_subscribers(subreddit):
     except Exception:
         # Handle any exceptions (network issues, etc.) and return 0
         return 0
+
 
