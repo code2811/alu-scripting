@@ -17,23 +17,18 @@ def top_ten(subreddit):
         None: Prints post titles or None if subreddit is invalid.
     """
     # Reddit API URL for hot posts in the specified subreddit
-    url = f"https://www.reddit.com/r/{subreddit}/hot.json"
+    url = "https://www.reddit.com/r/{}/hot.json".format(subreddit)
     
     # Custom User-Agent to avoid too many requests error
     headers = {
         'User-Agent': 'linux:alu_api_script:v1.0 (by /u/alu_student)'
     }
     
-    # Parameters to limit the number of posts and disable following redirects
-    params = {
-        'limit': 10
-    }
-    
     # Make the request to the Reddit API
     response = requests.get(
         url,
         headers=headers,
-        params=params,
+        params={'limit': 10},
         allow_redirects=False
     )
     
