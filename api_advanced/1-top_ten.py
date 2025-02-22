@@ -18,7 +18,7 @@ def top_ten(subreddit):
         subreddit (str): The name of the subreddit to query
 
     Returns:
-        None: Prints the titles directly, or prints None for invalid subreddits
+        None
     """
     # Build the URL for the subreddit's hot posts JSON endpoint
     url = "https://www.reddit.com/r/{}/hot.json".format(subreddit)
@@ -43,18 +43,23 @@ def top_ten(subreddit):
         )
 
         # Check if request was successful and subreddit exists
+        if response.status_code == 404:
+            print("None")
+            return
+
         if response.status_code == 200:
             # Parse JSON response
-            data = response.json()
-            posts = data["data"]["children"]
+            results = response.json().get("data", {}).get("children", [])
+            
+            if not results:
+                print("None")
+                return
 
-            # Print titles of first 10 posts
-            for post in posts:
-                print(post["data"]["title"])
+            # Print first 10 hot posts
+            for post in results[0:10]:
+                print(post.get("data", {}).get("title"))
         else:
-            # Print None for invalid subreddits
-            print(None)
+            print("None")
 
     except Exception:
-        # Print None if any error occurs
-        print(None)
+        print("None")
